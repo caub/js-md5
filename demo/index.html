@@ -1,4 +1,12 @@
-<input type="file" id="input" multiple> <label><input type="checkbox" id="chunk"> hash with chunks (better for very large files)</label>
+<form id="form">
+	<input type="file" name="input" multiple> 
+	<label><input type="checkbox" name="chunk">hash with chunks</label>
+	<fieldset>
+		<label><input type="radio" name="lib" checked>js-md5</label>
+		<label><input type="radio" name="lib">md5</label>
+	</fieldset>
+	
+</form>
 <table>
 	<thead>
 	<tr><th>file</th><th>type</th><th>size</th><th>md5</th><th>duration</th></tr>
@@ -19,21 +27,30 @@ table {
 td:nth-child(4) {
 	font-family: monospace;
 }
+fieldset {
+	display: inline-block;
+	border: none;
+}
 
 </style>
 
-<!-- <script src="https://cdn.rawgit.com/caub/node-md5/master/dist/md5.min.js"></script> -->
-<!-- <script src="https://unpkg.com/js-md5@0.4.1/build/md5.min.js"></script> -->
+<script src="https://cdn.rawgit.com/pvorb/node-md5/master/dist/md5.min.js"></script>
+<script>
+	var MD5 = window.MD5;
+</script>
 <script src="../src/md5.js"></script>
-
+<script>
+	var jsMD5 = window.md5;
+</script>
 
 <script>
-var MD5 = window.MD5 || window.md5;
 
-input.onchange = function(e) {
+form.input.onchange = function(e) {
 	output.innerHTML = '';
 
-	Array.from(input.files).forEach(function(file, i) {
+	var md5 = form.lib[0].checked ? jsMD5 : MD5;
+
+	Array.from(form.input.files).forEach(function(file, i) {
 
 		var tr = output.insertRow();
 		[file.name, file.type, file.size].forEach(function(val){
@@ -41,13 +58,13 @@ input.onchange = function(e) {
 			td.textContent = val;
 		});
 
-		if (chunk.checked) {
+		if (form.chunk.checked) {
 			// with chunks:
 
 			var md5 = MD5.create();
 			var now = performance.now();
 
-			readFile(input.files[i], function(buffer) {
+			readFile(form.input.files[i], function(buffer) {
 				const arr = new Uint8Array(buffer);
 				md5.update(arr);
 			}, function(){
@@ -64,7 +81,7 @@ input.onchange = function(e) {
 			// without chunks:
 
 			var reader = new FileReader();
-			reader.readAsArrayBuffer(input.files[i])
+			reader.readAsArrayBuffer(form.input.files[i])
 			reader.onload = function(e) {
 
 				var buffer = e.target.result;

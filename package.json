@@ -12,7 +12,7 @@
     "uglifyjs": "~2.4.10"
   },
   "scripts": {
-    "test": "mocha tests/node-test.js -r jscoverage",
+    "test": "mocha tests/node-test.js",
     "report": "mocha tests/node-test.js -r jscoverage --covout=html",
     "coveralls": "mocha tests/node-test.js -R mocha-lcov-reporter -r jscoverage | coveralls",
     "doc": "rm -rf doc;jsdoc src README.md -d doc",
